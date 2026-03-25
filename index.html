@@ -1,60 +1,119 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <script type="module"
-    src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js">
-  </script>
-  <title>View in AR</title>
-  <style>
-    body {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-      background: #f0f0f0;
-      gap: 10px;
-    }
-    model-viewer {
-        width:100vw;
-        height: 100vh;
-    }
-   model-viewer::part(ar-button) {
-    position: absolute;
-    top: 50%;
-    left: 50%;
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Carbon Structure Viewer - AR</title>
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+  
+  <style>
+    body { margin: 0; background-color: #f0f0f0; font-family: sans-serif; }
+    model-viewer { width: 100vw; height: 100vh; }
 
-    background-color: #FF2400;
-    color: white;
-    border-radius: 8px;
-    padding: 12px 24px;
-    font-size: 18px;
+    /* The Red Circle Button */
+    .Hotspot {
+      background: #FF2400;
+      border-radius: 32px;
+      border: 0;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+      box-sizing: border-box;
+      cursor: pointer;
+      height: 24px;
+      padding: 8px;
+      position: relative;
+      transition: opacity 0.3s;
+      width: 24px;
     }
-  </style>
+
+    .Hotspot:not([data-visible]) {
+      background: transparent;
+      border: 4px solid #fff;
+      box-shadow: none;
+      height: 32px;
+      pointer-events: none;
+      width: 32px;
+    }
+
+    .Hotspot:focus { border: 4px solid rgb(0, 128, 255); outline: none; }
+
+    /* The Label (100, 110, 111) */
+    .HotspotAnnotation {
+      background: #fff;
+      border-radius: 4px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+      color: rgba(0, 0, 0, 0.8);
+      display: block;
+      font-family: Futura, Helvetica Neue, sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      left: calc(100% + 1em);
+      max-width: 128px;
+      padding: 0.5em 1em;
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: max-content;
+    }
+
+    /* AR Button styling */
+    #ar-button {
+      background-color: #FF2400;
+      border-radius: 8px;
+      border: none;
+      color: white;
+      padding: 12px 24px;
+      position: absolute;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 18px;
+    }
+  </style>
 </head>
 <body>
-    <model-viewer
-        src="Carbon Structure Viewer.glb"
-        ios-src="Carbon Structure Viewer.usdz"
-        ar
-        ar-modes="web-ar scene-viewer quick-look"
-        camera-controls
-        auto-rotate>
 
-    <button slot="ar-button">View in AR</button>
+  <model-viewer 
+    src="Carbon Structure Viewer.glb" 
+    ios-src="Carbon Structure Viewer.usdz"
+    ar 
+    ar-modes="webxr scene-viewer quick-look" 
+    camera-controls 
+    tone-mapping="neutral" 
+    shadow-intensity="1">
 
-    <script>
+    <button class="Hotspot" slot="hotspot-1" data-position="0.8295m 0.4970m 0.0326m" data-normal="0m 0m 1m" data-visibility-attribute="visible">
+        <div class="HotspotAnnotation">100</div>
+    </button>
+
+    <button class="Hotspot" slot="hotspot-2" data-position="0.8200m 0.3389m 0.0326m" data-normal="0m 0m 1m" data-visibility-attribute="visible">
+        <div class="HotspotAnnotation">110</div>
+    </button>
+
+    <button class="Hotspot" slot="hotspot-3" data-position="0.8089m 0.1878m 0.0326m" data-normal="0m 0m 1m" data-visibility-attribute="visible">
+        <div class="HotspotAnnotation">111</div>
+    </button>
+
+    <button slot="ar-button" id="ar-button">View in AR</button>
+  </model-viewer>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
       const modelViewer = document.querySelector("model-viewer");
 
-      const btn100 = document.querySelector('button[slot="hotspot-100"]');
-      const btn110 = document.querySelector('button[slot="hotspot-110"]');
-      const btn111 = document.querySelector('button[slot="hotspot-111"]');
+      // Grab the buttons by the slot names we used above
+      const btn100 = document.querySelector('button[slot="hotspot-1"]');
+      const btn110 = document.querySelector('button[slot="hotspot-2"]');
+      const btn111 = document.querySelector('button[slot="hotspot-3"]');
 
       const switchZone = (activeName) => {
-        if (!modelViewer.model) return;
+        // Wait for model to load
+        if (!modelViewer.model) {
+          console.warn("Model still loading...");
+          return;
+        }
+
+        // IMPORTANT: Ensure these names match your Blender objects exactly
+        // If your code fails, check the console for the real names
         const names = ['100-Button', '110-Button', '111-Button'];
         
         names.forEach(name => {
@@ -65,11 +124,12 @@
         });
       };
 
-      btn100.addEventListener('click', () => switchZone('100-Button'));
-      btn110.addEventListener('click', () => switchZone('110-Button'));
-      btn111.addEventListener('click', () => switchZone('111-Button'));
-    </script>
+      // Set up the click listeners
+      if (btn100) btn100.addEventListener('click', () => switchZone('100-Button'));
+      if (btn110) btn110.addEventListener('click', () => switchZone('110-Button'));
+      if (btn111) btn111.addEventListener('click', () => switchZone('111-Button'));
+    });
+  </script>
 
-  </model-viewer>
 </body>
 </html>
