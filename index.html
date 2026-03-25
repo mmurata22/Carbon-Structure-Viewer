@@ -46,6 +46,30 @@
 
     <button slot="ar-button">View in AR</button>
 
+    <script>
+      const modelViewer = document.querySelector("model-viewer");
+
+      const btn100 = document.querySelector('button[slot="hotspot-100"]');
+      const btn110 = document.querySelector('button[slot="hotspot-110"]');
+      const btn111 = document.querySelector('button[slot="hotspot-111"]');
+
+      const switchZone = (activeName) => {
+        if (!modelViewer.model) return;
+        const names = ['100-Button', '110-Button', '111-Button'];
+        
+        names.forEach(name => {
+          const node = modelViewer.model.nodes.find(n => n.name === name);
+          if (node) {
+            node.isVisible = (name === activeName);
+          }
+        });
+      };
+
+      btn100.addEventListener('click', () => switchZone('100-Button'));
+      btn110.addEventListener('click', () => switchZone('110-Button'));
+      btn111.addEventListener('click', () => switchZone('111-Button'));
+    </script>
+
   </model-viewer>
 </body>
 </html>
