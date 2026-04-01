@@ -80,56 +80,7 @@
     camera-controls 
     tone-mapping="neutral" 
     shadow-intensity="1">
-
-    <button class="Hotspot" slot="hotspot-1" data-position="0.8295m 0.4970m 0.0326m" data-normal="0m 0m 1m" data-visibility-attribute="visible">
-        <div class="HotspotAnnotation">100</div>
-    </button>
-
-    <button class="Hotspot" slot="hotspot-2" data-position="0.8200m 0.3389m 0.0326m" data-normal="0m 0m 1m" data-visibility-attribute="visible">
-        <div class="HotspotAnnotation">110</div>
-    </button>
-
-    <button class="Hotspot" slot="hotspot-3" data-position="0.8089m 0.1878m 0.0326m" data-normal="0m 0m 1m" data-visibility-attribute="visible">
-        <div class="HotspotAnnotation">111</div>
-    </button>
-
     <button slot="ar-button" id="ar-button">View in AR</button>
   </model-viewer>
-
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const modelViewer = document.querySelector("model-viewer");
-
-      // Grab the buttons by the slot names we used above
-      const btn100 = document.querySelector('button[slot="hotspot-1"]');
-      const btn110 = document.querySelector('button[slot="hotspot-2"]');
-      const btn111 = document.querySelector('button[slot="hotspot-3"]');
-
-      const switchZone = (activeName) => {
-        // Wait for model to load
-        if (!modelViewer.model) {
-          console.warn("Model still loading...");
-          return;
-        }
-
-        // IMPORTANT: Ensure these names match your Blender objects exactly
-        // If your code fails, check the console for the real names
-        const names = ['100-Button', '110-Button', '111-Button'];
-        
-        names.forEach(name => {
-          const node = modelViewer.model.nodes.find(n => n.name === name);
-          if (node) {
-            node.isVisible = (name === activeName);
-          }
-        });
-      };
-
-      // Set up the click listeners
-      if (btn100) btn100.addEventListener('click', () => switchZone('100-Button'));
-      if (btn110) btn110.addEventListener('click', () => switchZone('110-Button'));
-      if (btn111) btn111.addEventListener('click', () => switchZone('111-Button'));
-    });
-  </script>
-
 </body>
 </html>
